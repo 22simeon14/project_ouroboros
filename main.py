@@ -3,8 +3,8 @@ import sys
 import pygame
 
 import config
-
-BACKGROUND_COLOR = (20, 24, 32)
+import renderer
+from snake import Snake
 
 
 def main():
@@ -13,13 +13,21 @@ def main():
     pygame.display.set_caption(config.WINDOW_TITLE)
     clock = pygame.time.Clock()
 
+    snake = Snake()
+    last_move_time = pygame.time.get_ticks()
     running = True
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
 
-        screen.fill(BACKGROUND_COLOR)
+        now = pygame.time.get_ticks()
+        if now - last_move_time >= config.MOVE_INTERVAL_MS:
+            snake.move()
+            last_move_time = now
+
+        renderer.draw_grid(screen)
+        renderer.draw_snake(screen, snake)
         pygame.display.flip()
         clock.tick(config.FPS)
 
