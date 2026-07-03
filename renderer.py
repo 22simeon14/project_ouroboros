@@ -31,3 +31,15 @@ def draw_snake(screen, snake):
         y = row * config.CELL_SIZE
         rect = pygame.Rect(x, y, config.CELL_SIZE, config.CELL_SIZE)
         pygame.draw.rect(screen, config.SNAKE_COLOR, rect)
+
+
+def draw_game_over(screen):
+    font = pygame.font.SysFont(None, 48)
+    title = font.render("Game Over", True, (240, 240, 240))
+    hint_font = pygame.font.SysFont(None, 28)
+    hint = hint_font.render("Press R to restart", True, (200, 200, 200))
+
+    title_rect = title.get_rect(center=(config.WINDOW_WIDTH // 2, config.WINDOW_HEIGHT // 2 - 20))
+    hint_rect = hint.get_rect(center=(config.WINDOW_WIDTH // 2, config.WINDOW_HEIGHT // 2 + 25))
+    screen.blit(title, title_rect)
+    screen.blit(hint, hint_rect)
