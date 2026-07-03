@@ -1,3 +1,4 @@
+import random
 import sys
 
 import pygame
@@ -15,6 +16,19 @@ DIRECTION_BY_KEY = {
 }
 
 
+def spawn_energy_cell(snake_body, grid_cols, grid_rows):
+    occupied = set(snake_body)
+    free_cells = [
+        (col, row)
+        for col in range(grid_cols)
+        for row in range(grid_rows)
+        if (col, row) not in occupied
+    ]
+    if not free_cells:
+        return None
+    return random.choice(free_cells)
+
+
 def main():
     pygame.init()
     screen = pygame.display.set_mode((config.WINDOW_WIDTH, config.WINDOW_HEIGHT))
@@ -22,6 +36,8 @@ def main():
     clock = pygame.time.Clock()
 
     snake = Snake()
+    score = 0
+    energy_cell = spawn_energy_cell(snake.body, config.GRID_COLS, config.GRID_ROWS)
     game_over = False
     last_move_time = pygame.time.get_ticks()
     running = True
@@ -34,6 +50,10 @@ def main():
                     running = False
                 elif game_over and event.key == pygame.K_r:
                     snake = Snake()
+                    score = 0
+                    energy_cell = spawn_energy_cell(
+                        snake.body, config.GRID_COLS, config.GRID_ROWS
+                    )
                     game_over = False
                     last_move_time = pygame.time.get_ticks()
                 elif not game_over and event.key in DIRECTION_BY_KEY:
@@ -50,12 +70,22 @@ def main():
                 next_col, next_row, config.GRID_COLS, config.GRID_ROWS
             ) or collision.is_self_collision(next_col, next_row, snake.body):
                 game_over = True
+            elif energy_cell is not None and (next_col, next_row) == energy_cell:
+                snake.grow()
+                snake.move()
+                score += 1
+                energy_cell = spawn_energy_cell(
+                    snake.body, config.GRID_COLS, config.GRID_ROWS
+                )
             else:
                 snake.move()
             last_move_time = now
 
         renderer.draw_grid(screen)
+        if energy_cell is not None:
+            renderer.draw_energy_cell(screen, energy_cell[0], energy_cell[1])
         renderer.draw_snake(screen, snake)
+        renderer.draw_score(screen, score)
         if game_over:
             renderer.draw_game_over(screen)
         pygame.display.flip()

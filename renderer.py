@@ -25,6 +25,19 @@ def draw_grid(screen):
         )
 
 
+def draw_energy_cell(screen, col, row):
+    x = col * config.CELL_SIZE
+    y = row * config.CELL_SIZE
+    rect = pygame.Rect(x, y, config.CELL_SIZE, config.CELL_SIZE)
+    pygame.draw.rect(screen, config.ENERGY_COLOR, rect)
+
+
+def draw_score(screen, score):
+    font = pygame.font.SysFont(None, 28)
+    text = font.render(f"Score: {score}", True, config.SCORE_TEXT_COLOR)
+    screen.blit(text, (8, 8))
+
+
 def draw_snake(screen, snake):
     for col, row in snake.body:
         x = col * config.CELL_SIZE

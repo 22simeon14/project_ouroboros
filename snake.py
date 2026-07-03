@@ -12,6 +12,10 @@ class Snake:
         ]
         self.direction = (1, 0)
         self.next_direction = (1, 0)
+        self.pending_growth = 0
+
+    def grow(self):
+        self.pending_growth += 1
 
     def request_direction(self, new_direction):
         opposite = (-self.direction[0], -self.direction[1])
@@ -25,4 +29,7 @@ class Snake:
         new_col = head_col + dx
         new_row = head_row + dy
         self.body.insert(0, (new_col, new_row))
-        self.body.pop()
+        if self.pending_growth > 0:
+            self.pending_growth -= 1
+        else:
+            self.body.pop()
