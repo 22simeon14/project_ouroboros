@@ -2,13 +2,15 @@ import config
 
 
 class Snake:
-    def __init__(self):
-        center_col = config.GRID_COLS // 2
-        center_row = config.GRID_ROWS // 2
+    def __init__(self, start_col=None, start_row=None):
+        if start_col is None:
+            start_col = config.GRID_COLS // 2
+        if start_row is None:
+            start_row = config.GRID_ROWS // 2
         self.body = [
-            (center_col, center_row),
-            (center_col - 1, center_row),
-            (center_col - 2, center_row),
+            (start_col, start_row),
+            (start_col - 1, start_row),
+            (start_col - 2, start_row),
         ]
         self.direction = (1, 0)
         self.next_direction = (1, 0)

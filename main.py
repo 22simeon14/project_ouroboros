@@ -6,7 +6,10 @@ import pygame
 import collision
 import config
 import renderer
+from level import load_level
 from snake import Snake
+
+LEVEL_PATH = "data/levels/level_01.json"
 
 DIRECTION_BY_KEY = {
     pygame.K_UP: (0, -1),
@@ -16,8 +19,8 @@ DIRECTION_BY_KEY = {
 }
 
 
-def spawn_energy_cell(snake_body, grid_cols, grid_rows):
-    occupied = set(snake_body)
+def spawn_energy_cell(snake_body, walls, grid_cols, grid_rows):
+    occupied = set(snake_body) | walls
     free_cells = [
         (col, row)
         for col in range(grid_cols)
@@ -35,9 +38,12 @@ def main():
     pygame.display.set_caption(config.WINDOW_TITLE)
     clock = pygame.time.Clock()
 
-    snake = Snake()
+    level = load_level(LEVEL_PATH)
+    snake = Snake(level.start[0], level.start[1])
     score = 0
-    energy_cell = spawn_energy_cell(snake.body, config.GRID_COLS, config.GRID_ROWS)
+    energy_cell = spawn_energy_cell(
+        snake.body, level.walls, config.GRID_COLS, config.GRID_ROWS
+    )
     game_over = False
     last_move_time = pygame.time.get_ticks()
     running = True
@@ -49,10 +55,10 @@ def main():
                 if event.key == pygame.K_ESCAPE:
                     running = False
                 elif game_over and event.key == pygame.K_r:
-                    snake = Snake()
+                    snake = Snake(level.start[0], level.start[1])
                     score = 0
                     energy_cell = spawn_energy_cell(
-                        snake.body, config.GRID_COLS, config.GRID_ROWS
+                        snake.body, level.walls, config.GRID_COLS, config.GRID_ROWS
                     )
                     game_over = False
                     last_move_time = pygame.time.get_ticks()
@@ -68,20 +74,23 @@ def main():
 
             if collision.is_out_of_bounds(
                 next_col, next_row, config.GRID_COLS, config.GRID_ROWS
-            ) or collision.is_self_collision(next_col, next_row, snake.body):
+            ) or collision.is_self_collision(next_col, next_row, snake.body) or collision.is_wall_collision(
+                next_col, next_row, level.walls
+            ):
                 game_over = True
             elif energy_cell is not None and (next_col, next_row) == energy_cell:
                 snake.grow()
                 snake.move()
                 score += 1
                 energy_cell = spawn_energy_cell(
-                    snake.body, config.GRID_COLS, config.GRID_ROWS
+                    snake.body, level.walls, config.GRID_COLS, config.GRID_ROWS
                 )
             else:
                 snake.move()
             last_move_time = now
 
         renderer.draw_grid(screen)
+        renderer.draw_walls(screen, level.walls)
         if energy_cell is not None:
             renderer.draw_energy_cell(screen, energy_cell[0], energy_cell[1])
         renderer.draw_snake(screen, snake)

@@ -1,6 +1,6 @@
 import unittest
 
-from collision import is_out_of_bounds, is_self_collision
+from collision import is_out_of_bounds, is_self_collision, is_wall_collision
 
 
 class TestOutOfBounds(unittest.TestCase):
@@ -19,6 +19,16 @@ class TestOutOfBounds(unittest.TestCase):
     def test_inside_grid(self):
         self.assertFalse(is_out_of_bounds(0, 0, 20, 20))
         self.assertFalse(is_out_of_bounds(19, 19, 20, 20))
+
+
+class TestWallCollision(unittest.TestCase):
+    def test_position_on_wall(self):
+        walls = {(3, 4), (5, 6)}
+        self.assertTrue(is_wall_collision(3, 4, walls))
+
+    def test_free_position_not_on_wall(self):
+        walls = {(3, 4), (5, 6)}
+        self.assertFalse(is_wall_collision(1, 1, walls))
 
 
 class TestSelfCollision(unittest.TestCase):

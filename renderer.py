@@ -25,6 +25,14 @@ def draw_grid(screen):
         )
 
 
+def draw_walls(screen, walls):
+    for col, row in walls:
+        x = col * config.CELL_SIZE
+        y = row * config.CELL_SIZE
+        rect = pygame.Rect(x, y, config.CELL_SIZE, config.CELL_SIZE)
+        pygame.draw.rect(screen, config.WALL_COLOR, rect)
+
+
 def draw_energy_cell(screen, col, row):
     x = col * config.CELL_SIZE
     y = row * config.CELL_SIZE
